@@ -14,7 +14,8 @@ describe('mergeSort', () => {
 
   it('does not change the original array', () => {
     const original = [3, 1, 2];
-    mergeSort(original);
+    const sorted = mergeSort(original);
+    assert.notStrictEqual(sorted, original);
     assert.deepEqual(original, [3, 1, 2]);
   });
 

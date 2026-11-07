@@ -17,7 +17,6 @@ Wire up the project execution layer by mapping an "npm test" command configurati
 An upgraded application manifest that sets up standard test runtime operations via the npm test script interface.
 - **What was wrong (or "nothing"):**The Helper was unsure about no remaining rules . Left pre-existing changes to build-2.md, index.html.
 
-### Prompt 2:
 - **What I asked:**
 - **What came back:**
 - **What was wrong (or "nothing"):**
@@ -28,3 +27,8 @@ An upgraded application manifest that sets up standard test runtime operations v
 - **What I asked:** Add the architecture diagrams, booking state machine, Node HTTP router/server, configuration, startup script, and tests.
 - **What came back:** A layered architecture document, explicit booking transitions, static-file HTTP server, `/health` route, startup configuration, and `node:test` coverage.
 - **What was wrong (or "nothing"):** The first server draft relied on an implicit response/request property for HEAD handling and had redundant error-status logic; both were simplified. Added a regression test proving static requests cannot escape `public/`.
+
+## Build 4
+- **What I asked:** Add and build a working API that works end to end with data held in memory: create events and tiers, publish, search, book, pay with a mock payment, and cancel an unpaid booking.
+- **What came back:** An Implemented the in-memory REST API with injected async repository/services, event search and sorting through the existing domain rules, mock payments, ownership checks, and unpaid-booking cancellation. Added API examples and real-server API tests.
+- **What was wrong:**

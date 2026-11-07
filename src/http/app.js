@@ -4,6 +4,9 @@ import { createServer } from 'node:http';
 import { extname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DomainError } from '../domain/errors.js';
+import { createMemoryRepository } from '../repositories/memory.js';
+import { charge } from '../lib/mockPaymentGateway.js';
+import { registerApiRoutes } from './routes.js';
 import { Router } from './router.js';
 
 const DEFAULT_PUBLIC_DIRECTORY = fileURLToPath(new URL('../../public/', import.meta.url));
@@ -102,10 +105,27 @@ async function servePublicFile(response, pathname, publicDirectory, method) {
   }
 }
 
-export function createAppServer({ router = new Router(), publicDirectory = DEFAULT_PUBLIC_DIRECTORY } = {}) {
+const ERROR_STATUSES = {
+  FORBIDDEN: 403,
+  INVALID_STATE: 409,
+  INVALID_TRANSITION: 409,
+  NOT_FOUND: 404,
+  PAYMENT_DECLINED: 402,
+  PAYMENT_FAILED: 502,
+  SOLD_OUT: 409,
+  UNAUTHENTICATED: 401,
+};
+
+export function createAppServer({
+  router = new Router(),
+  publicDirectory = DEFAULT_PUBLIC_DIRECTORY,
+  repository = createMemoryRepository(),
+  paymentGateway = { charge },
+} = {}) {
   if (!router.match('GET', '/health')) {
     router.get('/health', () => ({ status: 200, body: { status: 'ok' } }));
   }
+  registerApiRoutes(router, repository, paymentGateway);
 
   return createServer(async (request, response) => {
     try {
@@ -129,7 +149,7 @@ export function createAppServer({ router = new Router(), publicDirectory = DEFAU
         return;
       }
       if (error instanceof DomainError) {
-        sendError(response, 400, error.code, error.message);
+        sendError(response, ERROR_STATUSES[error.code] ?? 400, error.code, error.message);
         return;
       }
       sendError(response, 500, 'INTERNAL_ERROR', 'An unexpected error occurred');

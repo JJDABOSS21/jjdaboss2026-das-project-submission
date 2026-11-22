@@ -3,6 +3,7 @@
 
 import { mergeSort } from './sorting.js';
 import { DomainError } from './errors.js';
+import { parseIsoDate } from './dateUtils.js';
 
 // A summary is what the event list shows: the event plus numbers from its tiers.
 export function summarizeEvent(event, tiers) {
@@ -19,19 +20,11 @@ export function summarizeEvent(event, tiers) {
   };
 }
 
-function parseDate(value, field, { endOfDay = false } = {}) {
-  const time = new Date(value).getTime();
-  if (Number.isNaN(time)) throw new DomainError('VALIDATION', `${field} must be a valid date`);
-  // "2026-12-05" as an upper bound should include the whole of the 5th.
-  const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(String(value));
-  return endOfDay && isDateOnly ? time + 24 * 60 * 60 * 1000 - 1 : time;
-}
-
 export function filterEvents(summaries, { q, city, from, to, maxPriceCents, onlyAvailable } = {}) {
   const text = q?.trim().toLowerCase();
   const wantedCity = city?.trim().toLowerCase();
-  const fromTime = from ? parseDate(from, 'from') : undefined;
-  const toTime = to ? parseDate(to, 'to', { endOfDay: true }) : undefined;
+  const fromTime = from ? parseIsoDate(from, 'from') : undefined;
+  const toTime = to ? parseIsoDate(to, 'to', { endOfDay: true }) : undefined;
 
   if (maxPriceCents !== undefined && (!Number.isInteger(maxPriceCents) || maxPriceCents < 0)) {
     throw new DomainError('VALIDATION', 'maxPriceCents must be a whole number of cents');

@@ -36,7 +36,12 @@
 
 ### S04: As an organizer, I want to publish and unpublish an event, so that I control when it goes public
 
-*Written by you, in pairs, during the Build 2 class. Add your three criteria here before you paste the AI prompt below.*
+- **Given** an organizer publishes an event
+- **When** organizer decides to take down or unpublish the event
+- **Then** The event is taken down from the page, and everyone who paid or was waitlisted for the event recieves a cancelled notification.
+- **Then** the attendee who paid for the event are refunded and those waitlisted are shown an apology page
+- **Given** an organizer decides to schedule when an event goes public
+- **Then** The event does not go public until the selected time.
 
 ### S05: As an attendee, I want to search, filter and sort published events, so that I can find one I like
 
